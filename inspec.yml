@@ -29,6 +29,8 @@ depends:
     tag: v1.0.0
 #  - name: inspec-gcp-cis-pci
 #    url: https://github.com/inspec/inspec-gcp-cis-pci/archive/master.tar.gz
+#  - name: inspec-gcp-cis-pci
+#    url: https://github.com/KonradSchieban/inspec-gcp-cis-pci/archive/kschieban/caching.tar.gz
 
 #depends:
 #  - name: inspec-gcp
