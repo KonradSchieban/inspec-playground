@@ -27,6 +27,19 @@ depends:
   - name: inspec-gcp
     git: https://github.com/inspec/inspec-gcp.git
     tag: v1.0.0
+#  - name: inspec-gcp-cis-pci
+#    url: https://github.com/inspec/inspec-gcp-cis-pci/archive/master.tar.gz
+
+#depends:
+#  - name: inspec-gcp
+#    url: https://github.com/KonradSchieban/inspec-gcp/archive/kschieban/add_helper_methods.tar.gz
+#    branch: kschieban/add_helper_methods
+
+#depends:
+#  - name: inspec-gcp
+#    url: https://github.com/KonradSchieban/inspec-gcp/archive/kschieban/sandbox.tar.gz
+#    branch: kschieban/sandbox
+
 inputs:
   - name: gcp_project_id
     description: 'The GCP project identifier.'

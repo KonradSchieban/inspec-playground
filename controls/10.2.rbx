@@ -43,26 +43,24 @@ control "pci-dss-#{pci_version}-#{pci_req}" do
 
   ref "PCI DSS #{pci_version}", url: "#{pci_url}"
 
-   # Subnets should have VPC flow logs enabled
-   google_compute_regions(project: gcp_project_id).region_names.each do |region|
-     #google_compute_subnetworks(project: gcp_project_id, region: region).where(enableFlowLogs: false).subnetwork_names.each do |subnet|
-     google_compute_subnetworks(project: gcp_project_id, region: region).subnetwork_names.each do |subnet|
-       #google_compute_subnetwork(project: gcp_project_id, region: region, name: subnet) do subnet
-       describe "[#{gcp_project_id}] #{region}/#{subnet}" do
-       #describe google_compute_subnetwork(project: gcp_project_id, region: region, name: subnet) do
-         subject { google_compute_subnetwork(project: gcp_project_id, region: region, name: subnet) }
-         its('log_config.enable') { should be true }
-         #it { should eq nil }
-       end
-     end
-   end
+  # Subnets should have VPC flow logs enabled
+  google_compute_regions(project: gcp_project_id).region_names.each do |region|
+    google_compute_subnetworks(project: gcp_project_id, region: region).subnetwork_names.each do |subnet|
+      subnet_obj = google_compute_subnetwork(project: gcp_project_id, region: region, name: subnet)
+      describe "[#{gcp_project_id}] #{region}/#{subnet}" do
+        subject { subnet_obj }
+        if subnet_obj.log_config.methods.include?(:enable) == true
+          its('log_config.enable') { should be true }
+        end
+      end
+    end
+  end
 
   # GCS Buckets should have logging enabled
   google_storage_buckets(project: gcp_project_id).bucket_names.each do |bucket|
     next if bucket =~ /#{bucket_logging_ignore_regex}/
     describe "[#{gcp_project_id}] GCS Bucket #{bucket}" do
       subject { google_storage_bucket(name: bucket).logging }
-      #it { should have_logging_enabled }
       its('log_bucket') { should_not eq nil }
     end
   end
@@ -150,7 +148,7 @@ control "pci-dss-#{pci_version}-#{pci_req}" do
   describe "[#{pci_version}][#{pci_req}][#{gcp_project_id}] Ensure a whitelist of users/SAs/groups have access to logging viewer" do
     subject { google_project_iam_binding(project: gcp_project_id, role: 'roles/logging.viewer') }
     it "matches the Logging Viewer allow list" do
-      expect(subject.members).to cmp(logging_viewer_list).or eq(nil)
+      expect(subject.members).to cmp(logging_viewer_list).or eq(nil).or cmp([])
     end
   end
 
